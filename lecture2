@@ -1,0 +1,56 @@
+
+# setup -------------------------------------------------------------------
+
+## load libraries ---------------------------------------------------------
+rm(list = ls())
+library(magrittr)
+library(ggplot2)
+
+# download SSDSE data ---------------------------------------------------------------
+urls <- c("https://www.nstac.go.jp/sys/files/static/SSDSE/data/2021/SSDSE-A-2021.csv",
+          "https://www.nstac.go.jp/sys/files/static/SSDSE/data/2021/SSDSE-B-2021.csv",
+          "https://www.nstac.go.jp/sys/files/static/SSDSE/data/2021/SSDSE-C-2021.csv",
+          "https://www.nstac.go.jp/sys/files/static/SSDSE/data/2021/SSDSE-D-2021.csv"
+          )
+
+for (i in 1:length(urls)) {
+  url <- urls[i]
+  destfile <- paste0(
+    "input/",
+    stringr::str_sub(urls[i],-16,-1)
+  )
+  download.file(url, destfile)
+  }
+
+
+# read data ---------------------------------------------------------------
+SSDSE <- readr::read_csv(
+  "input/SSDSE-B-2021.csv",
+  skip = 1,
+  locale = readr::locale(
+    encoding = "CP932"
+    )
+  )
+
+# plot data ---------------------------------------------------------------
+
+SSDSE %>%
+  ggplot2::ggplot(
+    ggplot2::aes(
+      x = 年度, 
+      y = 総人口, 
+      group = 都道府県)
+    ) +
+  ggplot2::geom_line(
+    ggplot2::aes(
+      color = 都道府県
+      )
+    ) +
+  ggplot2::geom_point(
+    ggplot2::aes(
+      color = 都道府県
+    )
+  )
+
+
+
